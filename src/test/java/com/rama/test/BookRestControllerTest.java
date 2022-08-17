@@ -36,7 +36,7 @@ public class BookRestControllerTest {
 
 		Book book = new Book(101, "Spring Boot", 850.00);
 		ObjectMapper mapper = new ObjectMapper();
-		String bookJson = mapper.writeValueAsString(mapper);
+		String bookJson = mapper.writeValueAsString(book);
 
 		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/addbook")
 											.contentType(MediaType.APPLICATION_JSON)
@@ -53,4 +53,28 @@ public class BookRestControllerTest {
         
 	
 	}
+	@Test
+	public void testAddBookFailed() throws Exception {
+		when(bookService.saveBook(ArgumentMatchers.any())).thenReturn(false);
+
+		Book book = new Book(101, "Spring Boot", 850.00);
+		ObjectMapper mapper = new ObjectMapper();
+		String bookJson = mapper.writeValueAsString(book);
+
+		MockHttpServletRequestBuilder reqBuilder = MockMvcRequestBuilders.post("/addbook")
+											.contentType(MediaType.APPLICATION_JSON)
+											.content(bookJson);
+        ResultActions perform = mockMvc.perform(reqBuilder);
+        
+        MvcResult mvcResult = perform.andReturn();
+        
+        MockHttpServletResponse response = mvcResult.getResponse();
+        
+        int status = response.getStatus();
+        
+        assertEquals(400, status);
+        
+	
+	}
+
 }
